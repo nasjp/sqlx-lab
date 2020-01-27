@@ -6,12 +6,12 @@ services:
     volumes:
       - .:/go/src/github.com/NasSilverBullet/sqlx-lab:cached
       - ./.local/packages:/go/pkg:cached
+    working_dir: /go/src/github.com/NasSilverBullet/sqlx-lab/app
     depends_on:
       - db
     command: >
-      sh -c 
-      "cd /go/src/github.com/NasSilverBullet/sqlx-lab/app;
-      go build -o sqlx-lab ./...;
+      sh -c
+      "go build -o sqlx-lab ./...;
       ./sqlx-lab"
     ports:
      - "8000:8000"
