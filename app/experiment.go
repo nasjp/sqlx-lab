@@ -1,8 +1,11 @@
 package main
 
 import (
-	"github.com/davecgh/go-spew/spew"
+	"database/sql"
+	"fmt"
+
 	"github.com/jmoiron/sqlx"
+	"golang.org/x/xerrors"
 )
 
 type Experiment struct {
@@ -16,15 +19,36 @@ func NewExperiment(db *sqlx.DB) *Experiment {
 }
 
 func (e *Experiment) SelectMethod() {
+	fmt.Println("start: select")
 	var us Users
 	err := e.DB.Select(&us, `SELECT * from users`)
-	spew.Dump(err)
-	spew.Dump(us)
+	if err == sql.ErrNoRows {
+		// これは表示されない
+		fmt.Println("err: err no row")
+	}
+	fmt.Println("done: select")
 }
 
 func (e *Experiment) GetMethod() {
+	fmt.Println("start: get")
 	u := &User{}
 	err := e.DB.Get(u, `SELECT * from users limit 1`)
-	spew.Dump(err)
-	spew.Dump(us)
+	if err == sql.ErrNoRows {
+		// これは表示される
+		fmt.Println("err: err no row")
+	}
+	fmt.Println("done: get")
+}
+
+func (e *Experiment) XError() error {
+	fmt.Println("start: get")
+	u := &User{}
+	err := e.DB.Get(u, `SELECT * from users limit 1`)
+	if err == sql.ErrNoRows {
+		return xerrors.Errorf("XError: %w", err)
+	}
+	if err != nil {
+		return xerrors.Errorf("XError: %w", err)
+	}
+	return nil
 }
