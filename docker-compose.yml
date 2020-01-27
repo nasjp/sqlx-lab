@@ -3,8 +3,6 @@ version: "3"
 services:
   app:
     image: golang:1.13.5-alpine3.10
-    ports:
-      - "8080:8080"
     volumes:
       - .:/go/src/github.com/NasSilverBullet/sqlx-lab:cached
       - ./.local/packages:/go/pkg:cached
