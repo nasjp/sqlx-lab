@@ -8,7 +8,13 @@ services:
       - ./.local/packages:/go/pkg:cached
     depends_on:
       - db
-    command: sh -c "go run /go/src/github.com/NasSilverBullet/sqlx-lab/main.go"
+    command: >
+      sh -c 
+      "cd /go/src/github.com/NasSilverBullet/sqlx-lab/app;
+      go build -o sqlx-lab ./...;
+      ./sqlx-lab"
+    ports:
+     - "8000:8000"
 
   db: &db
     image: mysql:5.7.25
