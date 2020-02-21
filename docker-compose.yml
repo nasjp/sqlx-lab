@@ -4,15 +4,13 @@ services:
   app:
     image: golang:1.13.5-alpine3.10
     volumes:
-      - .:/go/src/github.com/NasSilverBullet/sqlx-lab:cached
+      - .:/sqlx-lab:cached
       - ./.local/packages:/go/pkg:cached
-    working_dir: /go/src/github.com/NasSilverBullet/sqlx-lab/app
+    working_dir: /sqlx-lab
     depends_on:
       - db
     command: >
-      sh -c
-      "go build -o sqlx-lab ./...;
-      ./sqlx-lab"
+      go run main.go
     ports:
      - "8000:8000"
 
