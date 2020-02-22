@@ -18,24 +18,18 @@ func main() {
 }
 
 func run() error {
-	db, err := newDB()
+	db, err := sqlx.Open("mysql", "root@tcp(db:3306)/test_db")
 	if err != nil {
 		return err
 	}
 	defer db.Close()
 
-	selectMethod(db)
-	getMethod(db)
+	selectStructs(db)
+	selectInts(db)
+	selectIntsWithScannable(db)
+	getStruct(db)
 
 	return nil
-}
-
-func newDB() (*sqlx.DB, error) {
-	db, err := sqlx.Open("mysql", "root@tcp(db:3306)/test_db")
-	if err != nil {
-		return nil, err
-	}
-	return db, nil
 }
 
 type User struct {
@@ -46,24 +40,32 @@ type User struct {
 
 type Users []*User
 
-func selectMethod(db *sqlx.DB) {
-	fmt.Println("start: select")
-	var us Users
-	err := db.Select(&us, `SELECT * from users`)
-	if err == sql.ErrNoRows {
-		// これは表示されない
-		fmt.Println("err: err no row")
-	}
-	fmt.Println("done: select")
+type id uint
+
+func (id) Scan(src interface{}) error {
+	return nil
 }
 
-func getMethod(db *sqlx.DB) {
-	fmt.Println("start: get")
+func selectStructs(db *sqlx.DB) {
+	var us Users
+	err := db.Select(&us, `SELECT * from users`)
+	fmt.Printf("- db.Select(&us, `SELECT * from users`)\n  err == sql.ErrNoRows => %t\n", err == sql.ErrNoRows)
+}
+
+func selectInts(db *sqlx.DB) {
+	var ids []uint
+	err := db.Select(&ids, `SELECT id from users`)
+	fmt.Printf("- db.Select(&ids, `SELECT id from users`)\n  err == sql.ErrNoRows => %t\n", err == sql.ErrNoRows)
+}
+
+func selectIntsWithScannable(db *sqlx.DB) {
+	var ids []id
+	err := db.Select(&ids, `SELECT id from users`)
+	fmt.Printf("- db.Select(&ids, `SELECT id from users`)\n  err == sql.ErrNoRows => %t\n", err == sql.ErrNoRows)
+}
+
+func getStruct(db *sqlx.DB) {
 	u := &User{}
 	err := db.Get(u, `SELECT * from users limit 1`)
-	if err == sql.ErrNoRows {
-		// これは表示される
-		fmt.Println("err: err no row")
-	}
-	fmt.Println("done: get")
+	fmt.Printf("- db.Get(u, `SELECT * from users limit 1`)\n  err == sql.ErrNoRows => %t\n", err == sql.ErrNoRows)
 }

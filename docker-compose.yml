@@ -4,9 +4,9 @@ services:
   app:
     image: golang:1.13.5-alpine3.10
     volumes:
-      - .:/sqlx-lab:cached
+      - .:/root/sqlx-lab:cached
       - ./.local/packages:/go/pkg:cached
-    working_dir: /sqlx-lab
+    working_dir: /root/sqlx-lab
     depends_on:
       - db
     command: >
